@@ -1,0 +1,55 @@
+##################################
+# FRONTEND (Next.js)
+##################################
+# Node modules
+/frontend/node_modules/
+
+# Build output
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+/frontend/.turbo/
+
+# Logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Env files
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development
+/frontend/.env.production
+/frontend/.env.test
+
+# IDE/Editor
+/frontend/.idea/
+frontend/.vscode/
+
+##################################
+# BACKEND (Spring Boot + Maven)
+##################################
+# Maven
+/backend/target/
+
+# Eclipse
+/backend/.classpath
+/backend/.project
+/backend/.settings/
+
+# IntelliJ
+/backend/.idea/
+backend/*.iml
+
+# Logs
+/backend/*.log
+
+##################################
+# COMMON
+##################################
+.DS_Store
+Thumbs.db
+*.log
+*.iml
+*.bak
+*.swp
