@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.board.domain.Post;
+import com.example.board.dto.PostDto;
 import com.example.board.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,11 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
     private final PostRepository postRepository;
 
-    public PostController(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
-    
     @GetMapping("/list")
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public List<PostDto> findAll() {
+        return postRepository.findAll()
+                .stream()
+                .map(PostDto::from)
+                .toList();
     }
 }

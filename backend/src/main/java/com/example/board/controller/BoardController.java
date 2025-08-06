@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import com.example.board.domain.Board;
+import com.example.board.dto.BoardDto;
 import com.example.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -15,13 +16,12 @@ import java.util.List;
 public class BoardController {
 
     private final BoardRepository boardRepository;
-
-    public BoardController(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
-    
+ 
     @GetMapping("/list")
-    public List<Board> findAll() {
-        return boardRepository.findAll(Sort.by(Sort.Direction.ASC, "orderNo"));
+    public List<BoardDto> findAll() {
+        return boardRepository.findAll(Sort.by(Sort.Direction.ASC, "orderNo"))
+                .stream()
+                .map(BoardDto::from)
+                .toList();
     }
 }
