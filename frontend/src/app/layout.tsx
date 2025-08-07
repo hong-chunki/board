@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+// import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { get } from "./_lib/fetch";
 import BoardNav from "./_components/BoardNav";
 import UserInfo from "./_components/UserInfo";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Providers from './providers';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -40,9 +31,9 @@ export default async function RootLayout({
         <BoardNav boards = {boards}></BoardNav>
       </header>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -2,22 +2,6 @@
 import { useState } from "react";
 import styled, { css } from 'styled-components';
 
-const BoardNavBlock = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  background: #585e91;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-`;
-const BoardNavBtn = styled.div`
-  color: white;
-  padding: 5px 10px;
-  font-size: 20px;
-
-  &:hover {
-    background : #4f428f;
-  }
-`;
 type Board = {
   id: number;
   name: string;
@@ -30,11 +14,16 @@ type Props = {
 
 const BoardNav = ({ boards } : Props ) => {
     return(
-      <BoardNavBlock>
+      <div className="flex justify-center w-full bg-[#585e91] shadow-[0_2px_4px_rgba(0,0,0,0.08)]">
         {boards.map((board) => (
-          <BoardNavBtn key={board.id}>{board.name}</BoardNavBtn>
-        ))}
-      </BoardNavBlock>
+        <div
+          key={board.id}
+          className="text-white px-3 py-1.5 text-xl cursor-pointer hover:bg-[#4f428f]"
+        >
+          {board.name}
+        </div>        
+      ))}
+      </div>
     )
 };
 

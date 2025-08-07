@@ -1,40 +1,30 @@
 'use client';
 import { useState } from "react";
-import styled, { css } from 'styled-components';
+import Link from 'next/link';
 
-const UserInfoBlock = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 2rem;
-  width: 100%;
-  background: #adadb1ff;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-  height: 35px;
-  align-items: center;
-`;
-const LoginBtn = styled.button`
-  padding-right: 2rem;
-  width: padding : 5px;
-  background: #d0d0d5;
-  height : 25px;
-  padding: 0px 10px;
-  line-height: 25px; 
-  border-radius: 5px;
-`;
-const InputBox = styled.input`
-  margin-right: 1rem;
-  background : white;
-  width : 90px;
-`;
 const UserInfo = () => {
     const [ user, setUser ] = useState( null );
     
     return(
-        <UserInfoBlock>
-            <InputBox />
-            <InputBox />
-            <LoginBtn>로그인</LoginBtn>
-        </UserInfoBlock>
+        <div className="flex justify-end items-center w-full bg-[#adadb1ff] shadow-[0_2px_4px_rgba(0,0,0,0.08)] h-[35px] pr-8">
+          <Link
+            href="/register"
+            className="block mr-4 text-black no-underline hover:text-[#246ea5] hover:underline"
+          >
+            회원가입
+          </Link>
+          <input
+            type="text"
+            className="mr-4 w-[90px] bg-white p-1"
+          />
+          <input
+            type="text"
+            className="mr-4 w-[90px] bg-white p-1"
+          />
+          <button className="h-[25px] px-4 bg-[#d0d0d5] rounded text-black leading-[25px]">
+            로그인
+          </button>
+        </div>
     )
 };
 

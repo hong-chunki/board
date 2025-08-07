@@ -1,36 +1,6 @@
 'use client';
 import { useState } from "react";
-import styled, { css } from 'styled-components';
 
-const PostBlock = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-`;
-const PostDiv = styled.div`
-  padding : 10px 5px;
-  width : 100%;
-  border-bottom : 1px solid gray;
-`;
-
-const Thumbnail = styled.img`
-    width : 100px;
-    height : auto;
-`;
-const Info = styled.div`
-    width : calc( 100% - 100px );
-    height : auto;
-`;
-const Title = styled.div`
-    font-size : 30px;
-`;
-const BoardName = styled.div`
-    font-size : 10px;
-`;
-const Date = styled.div`
-    font-size : 10px;
-`;
 type Post = {
   id: number;
   title: string;
@@ -46,19 +16,20 @@ type Props = {
 
 const PostList = ({ posts } : Props ) => {
     return(
-      <PostBlock>
+      <div className="flex justify-center w-full shadow-[0_2px_4px_rgba(0,0,0,0.08)] flex-col">
         {posts.map((post) => (
-          <PostDiv key={post.id}>
-            <Thumbnail alt=""></Thumbnail>
-            <Info>
-                <Title>{post.title}</Title>
-                <BoardName>테스트</BoardName>
-                <Date>{post.reg_date.toLocaleString('ko-KR')}</Date>
-            </Info>
-            
-            </PostDiv>
+          <div key={post.id} className="flex w-full border-b border-gray-400 p-2">
+            <img alt="" className="w-[100px] h-auto object-cover" />
+            <div className="flex flex-col ml-4 w-[calc(100%-100px)]">
+              <div className="text-2xl font-semibold">{post.title}</div>
+                <div className="text-xs text-gray-600">테스트</div>
+                <div className="text-xs text-gray-600">
+                  {post.reg_date.toLocaleString('ko-KR')}
+                </div>            
+              </div>
+            </div>
         ))}
-      </PostBlock>
+      </div>
     )
 };
 

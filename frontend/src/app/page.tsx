@@ -3,6 +3,8 @@ import Image from "next/image";
 import { get } from "./_lib/fetch";
 import PostList from "./_components/PostList";
 
+import './globals.css';
+
 type Post = {
   id: number;
   title: string;

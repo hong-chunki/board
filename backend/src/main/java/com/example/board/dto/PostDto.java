@@ -10,7 +10,8 @@ public record PostDto(
     String content,
     String board_name,
     LocalDateTime reg_date,
-    Integer view
+    Integer view,
+    String category
 ) {
     public static PostDto from(Post post) {
         return new PostDto(
@@ -19,7 +20,8 @@ public record PostDto(
             post.getContent(),
             post.getBoard().getName(),
             post.getRegDate(),
-            post.getView()
-        );
+            post.getView(),
+            post.getCategory().getName()
+       );
     }
 }
