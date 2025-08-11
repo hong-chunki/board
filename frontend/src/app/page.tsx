@@ -1,21 +1,12 @@
 import Image from "next/image";
-
-import { get } from "./_lib/fetch";
 import PostList from "./_components/PostList";
-
 import './globals.css';
-
-type Post = {
-  id: number;
-  title: string;
-  content : Text;
-  reg_date: Date;
-  view : number;
-};
+import { getPosts } from "./_lib/api";
+import { Post } from "./_types/post";
 
 export default async function Home() {
-  const posts = await get<Post[]>('http://localhost:8080/api/posts/list');
-  
+  const posts: Post[] = await getPosts();
+
   return (
 
     <PostList posts={posts}></PostList>

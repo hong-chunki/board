@@ -1,13 +1,6 @@
 'use client';
 import { useState } from "react";
-
-type Post = {
-  id: number;
-  title: string;
-  content : Text;
-  reg_date: Date;
-  view : number;
-};
+import { Post } from "../_types/post";
 
 type Props = {
   posts: Post[];
@@ -24,7 +17,7 @@ const PostList = ({ posts } : Props ) => {
               <div className="text-2xl font-semibold">{post.title}</div>
                 <div className="text-xs text-gray-600">테스트</div>
                 <div className="text-xs text-gray-600">
-                  {post.reg_date.toLocaleString('ko-KR')}
+                  {new Date(post.reg_date).toLocaleString('ko-KR')}
                 </div>            
               </div>
             </div>
