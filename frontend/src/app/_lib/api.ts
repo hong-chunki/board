@@ -25,3 +25,16 @@ export async function registerUser(data: {
   if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
   return res.json();
 }
+
+export async function loginAuth(data: {
+  id: string;
+  password: string;
+}) {
+  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}

@@ -6,5 +6,6 @@ import com.example.board.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 	
-	 boolean existsByLoginId(String userId);
+	 boolean 	existsByLoginId(String userId);
+	 User 		findByLoginId(String id);
 }

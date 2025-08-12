@@ -3,12 +3,17 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { registerUser } from "../_lib/api";
 
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '@/store/userSlice';
+
 const RegisterForm = () => {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const router = useRouter();
 
@@ -45,9 +50,13 @@ const RegisterForm = () => {
     }
     
     try {
-      await registerUser(data);
-      alert('가입이 완료되었습니다.');
-      router.replace('/login'); // 혹은 메인으로
+      const res = await registerUser(data);
+      if( res.head.result_code == "200" ) {
+        dispatch(login(res));
+        router.replace('/'); 
+      } else {
+        alert( res.head.result_msg );
+      }
     } catch (e) {
       console.error(e);
       alert('네트워크 오류가 발생했습니다.');

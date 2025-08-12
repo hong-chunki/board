@@ -3,8 +3,10 @@ package com.example.board.controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.board.classes.ResponseData;
 import com.example.board.dto.UserRegister;
 import com.example.board.repository.UserRepository;
 import com.example.board.service.AuthService;
@@ -21,9 +23,12 @@ public class AuthController {
 	private final UserRepository userRepository;
     
     @PostMapping("/register")	
-    public void register( @RequestBody UserRegister user, HttpServletRequest request) {
-    	userService.register(user);
-    	System.out.println( user );
-    	
+    public @ResponseBody ResponseData register( @RequestBody UserRegister user, HttpServletRequest request) {
+    	return userService.register(user);
+    }
+    
+    @PostMapping("/login")	
+    public @ResponseBody ResponseData login( @RequestBody UserRegister user, HttpServletRequest request) {
+    	return userService.login(user);
     }
 }

@@ -4,9 +4,9 @@ import "./globals.css";
 import { get } from "./_lib/fetch";
 import BoardNav from "./_components/BoardNav";
 import UserInfo from "./_components/UserInfo";
-import Providers from './providers';
 import { Board } from "./_types/post";
 import { getBoards } from "./_lib/api";
+import Providers from "./_components/Providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,9 +26,11 @@ export default async function RootLayout({
       <body
         className={`antialiased`}
       >
-        <UserInfo></UserInfo>
-        <BoardNav boards = {boards}></BoardNav>
-        <Providers>{children}</Providers>
+        <Providers>
+          <UserInfo></UserInfo>
+          <BoardNav boards = {boards}></BoardNav>
+          {children}
+        </Providers>
       </body>
     </html>
   );
