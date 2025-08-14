@@ -11,7 +11,8 @@ public record PostDto(
     String board_name,
     LocalDateTime reg_date,
     Integer view,
-    String category
+    String category,
+    String user_name
 ) {
     public static PostDto from(Post post) {
         return new PostDto(
@@ -21,7 +22,8 @@ public record PostDto(
             post.getBoard().getName(),
             post.getRegDate(),
             post.getView(),
-            post.getCategory().getName()
+            post.getCategory().getName(),
+            post.getUser().getNickname()
        );
     }
 }

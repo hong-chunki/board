@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.example.board.repository.PostMapper">
+	<select id="getPostList" parameterType="HashMap" resultType="com.example.board.dto.PostSummaryDto" >
+		select 
+			p.id, p.title, u.nickname, c.name catergory_name, p.reg_date, p.view, ifnull( sum( if(pv.vote_type = 'up', 1, null) ), 0 ) - ifnull( sum( if(pv.vote_type = 'down', 1, null) ), 0 ) as votes
+		from
+			posts p
+		join
+			users u
+		on
+			p.user_id = u.id
+		join
+			categorys c
+		on
+			p.category_id = c.id
+		left outer join
+			post_votes pv
+		on
+			p.id= pv.post_id
+			
+		<where>
+			<if test="boardId != null">
+				p.board_id=#{boardId}
+			</if>
+			<if test="q != null">
+			and
+				p.content like concat('%', #{q}, '%')
+			</if>
+		</where>
+		group by
+			p.id
+		ORDER BY 
+			p.reg_date DESC
+		LIMIT 
+			#{offset}, #{size};
+	</select>
+
+	<select id="getPostListCount" parameterType="HashMap" resultType="int" >
+		select 
+			count(*)
+		from
+			posts p
+		join
+			users u
+		on
+			p.user_id = u.id
+		<where>
+			<if test="boardId != null">
+				p.board_id=#{boardId}
+			</if>
+			<if test="q != null">
+			and
+				p.content like concat('%', #{q}, '%')
+			</if>
+		</where>
+	</select>
+
+</mapper>

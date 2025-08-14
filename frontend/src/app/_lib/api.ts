@@ -1,7 +1,18 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
 
-export async function getPosts() {
-  const res = await fetch(`${BASE_URL}/api/posts/list`, { cache: 'no-store' });
+export async function getPosts(data: {
+  boardId: number;
+  page: number;
+  size: number;
+}) {
+
+  let base_url = `${BASE_URL}/api/posts/list`;
+  
+  if( data.boardId != 0 ) {
+    base_url += "/" + data.boardId;
+  }
+  const url = base_url + `?page=${data.page + 1}&size=${data.size}`;
+  const res = await fetch( url, { cache: 'no-store' });
   if (!res.ok) throw new Error(`GET 실패: ${res.status}`);
   return res.json();
 }
