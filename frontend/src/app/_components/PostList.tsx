@@ -13,6 +13,7 @@ type ApiRes = { rows: Row[]; total: number };
 
 const PostList = ({ boardId } : Props ) => {
   const columns = useMemo<ColumnDef<Row>[]>(() => [
+    { accessorKey: 'catergoryName', header: '탭' },
     { accessorKey: 'title', header: '제목' },
     { accessorKey: 'userName', header: '작성자' },
     { accessorKey: 'regDate', header: '날짜' },

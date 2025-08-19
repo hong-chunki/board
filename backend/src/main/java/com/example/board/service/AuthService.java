@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.board.classes.LoginInfoData;
 import com.example.board.classes.ResponseData;
 import com.example.board.classes.ResponseData.Head;
 import com.example.board.constant.ResultCode;
@@ -15,6 +16,8 @@ import com.example.board.dto.UserRegister;
 import com.example.board.repository.UserRepository;
 import com.example.board.utils.ResponseDataUtility;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -51,10 +54,12 @@ public class AuthService {
         return responseData;
     }
     
-    public ResponseData login(UserRegister dto) {
+    public ResponseData login(UserRegister dto, HttpServletRequest request) {
 		ResponseData 	responseData 	= new ResponseData();
 		Head			head			= new Head();
-		
+		LoginInfoData 	login_info 		= new LoginInfoData();
+		HttpSession 	session 		= request.getSession();
+
 		HashMap<String, Object> body = new HashMap<>();
 		
         if (!userRepository.existsByLoginId(dto.id())) {
@@ -71,6 +76,10 @@ public class AuthService {
             	
         		head.setResult_code( ResultCode.SUCCESS );
         		head.setResult_msg( ResultMsg.SUCCESS );
+
+        		login_info.setLoginInfoData( user );
+        		
+				session.setAttribute( "loginInfo", login_info );
             } else {
         		head.setResult_code( ResultCode.USER_PASSWORD_NOT_MATCHED );
         		head.setResult_msg( ResultMsg.USER_PASSWORD_NOT_MATCHED );

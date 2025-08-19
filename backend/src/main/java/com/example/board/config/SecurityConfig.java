@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,6 +24,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/**").permitAll() // API는 전부 허용
                 .anyRequest().permitAll() // 테스트용 - 나머지도 허용
             )
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .httpBasic(Customizer.withDefaults()); // 기본 인증(테스트용)
 
         return http.build();

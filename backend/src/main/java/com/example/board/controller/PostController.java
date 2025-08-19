@@ -3,15 +3,19 @@ package com.example.board.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.board.classes.ResponseData;
+import com.example.board.dto.PostWriteDto;
 import com.example.board.repository.PostRepository;
 import com.example.board.service.PostService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,5 +41,10 @@ public class PostController {
     	    @RequestParam(defaultValue = "20") int size,
     	    @RequestParam(defaultValue = "reg_date,DESC") String sort) {
     	return postService.getPostList( boardId, offset, size, sort );
+    } 
+    
+    @PostMapping("/write")
+    public @ResponseBody ResponseData writePost( @RequestBody PostWriteDto dto, HttpServletRequest request) {
+    	return postService.writePost( dto, request );
     }
 }

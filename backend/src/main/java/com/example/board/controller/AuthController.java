@@ -29,6 +29,6 @@ public class AuthController {
     
     @PostMapping("/login")	
     public @ResponseBody ResponseData login( @RequestBody UserRegister user, HttpServletRequest request) {
-    	return userService.login(user);
+    	return userService.login(user, request);
     }
 }

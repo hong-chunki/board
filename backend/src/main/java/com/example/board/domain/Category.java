@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "categorys") // 실제 테이블 이름 명시
+@Table(name = "categories") // 실제 테이블 이름 명시
 @Getter
 @Setter
 @NoArgsConstructor

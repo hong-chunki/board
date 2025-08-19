@@ -14,7 +14,7 @@
 		on
 			p.user_id = u.id
 		join
-			categorys c
+			categories c
 		on
 			p.category_id = c.id
 		left outer join
