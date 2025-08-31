@@ -14,6 +14,7 @@ export async function getPosts(data: {
   const res = await fetch( url, { cache: 'no-store',
     credentials: 'include', });
   if (!res.ok) throw new Error(`GET 실패: ${res.status}`);
+
   return res.json();
 }
 
@@ -67,6 +68,31 @@ export async function writePost(data: {
   content: string;
 }) {
   const res = await fetch(`${BASE_URL}/api/posts/write`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}
+
+export async function getPost(postId : number) {
+  const base_url = `${BASE_URL}/api/posts/`;
+ 
+  const url = base_url + postId;
+
+  const res = await fetch( url, { cache: 'no-store',
+    credentials: 'include', });
+  if (!res.ok) throw new Error(`GET 실패: ${res.status}`);
+  return res.json();
+}
+
+export async function writeComment(data: {
+  postId : number;
+  content: string;
+}) {
+  const res = await fetch(`${BASE_URL}/api/posts/writeComment`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

@@ -14,12 +14,16 @@ import com.example.board.constant.ResultCode;
 import com.example.board.constant.ResultMsg;
 import com.example.board.domain.Board;
 import com.example.board.domain.Category;
+import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
 import com.example.board.domain.User;
+import com.example.board.dto.CommentDto;
+import com.example.board.dto.PostDto;
 import com.example.board.dto.PostSummaryDto;
 import com.example.board.dto.PostWriteDto;
 import com.example.board.repository.BoardRepository;
 import com.example.board.repository.CategoryRepository;
+import com.example.board.repository.CommentRepository;
 import com.example.board.repository.PostMapper;
 import com.example.board.repository.PostRepository;
 import com.example.board.repository.UserRepository;
@@ -43,6 +47,7 @@ public class PostService {
     private final BoardRepository		boardRepository;
     private final CategoryRepository 	categoryRepository;
     private final UserRepository 		userRepository;
+    private final CommentRepository 	commentRepository;
     
 	public ResponseData getPostList( Long boardId, int offset, int size, String sort ) {
 		ResponseData 	responseData 	= new ResponseData();
@@ -62,37 +67,82 @@ public class PostService {
         return responseData;
 	}
 	
-	 public ResponseData writePost(PostWriteDto dto, HttpServletRequest request) {
-			ResponseData 	responseData 	= new ResponseData();
-			Head			head			= new Head();
-			HttpSession 	session 		= request.getSession();
-			LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+	public ResponseData writePost(PostWriteDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
 			
-			HashMap<String, Object> body = new HashMap<>();
+		HashMap<String, Object> body = new HashMap<>();
 
-			try {
-				Board boardRef = boardRepository.getReferenceById(dto.boardId()); // DB select 안함(프록시)
-			    Category catRef = categoryRepository.getReferenceById(dto.categoryId());
-			    User userRef = userRepository.getReferenceById(login_info.getId());
+		try {
+			Board boardRef = boardRepository.getReferenceById(dto.boardId()); 
+			Category catRef = categoryRepository.getReferenceById(dto.categoryId());
+			User userRef = userRepository.getReferenceById(login_info.getId());
 			    
-				Post post = new Post();
+			Post post = new Post();
 
-				post.setCategory( catRef );
-				post.setBoard( boardRef );
-				post.setTitle( dto.title() );
-				post.setContent( dto.content() );
-				post.setUser( userRef );
-				postRepository.save( post );
+			post.setCategory( catRef );
+			post.setBoard( boardRef );
+			post.setTitle( dto.title() );
+			post.setContent( dto.content() );
+			post.setUser( userRef );
+			postRepository.save( post );
 
-        		head.setResult_code( ResultCode.SUCCESS );
-        		head.setResult_msg( ResultMsg.SUCCESS );
-			} catch( Exception e ) {
+			head.setResult_code( ResultCode.SUCCESS );
+			head.setResult_msg( ResultMsg.SUCCESS );
+		} catch( Exception e ) {
 
-        		head.setResult_code( ResultCode.ERROR );
-        		head.setResult_msg( ResultMsg.ERROR );
-			}
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+		}
 			
-			responseData = responseUtils.setResponseDataWithEmptyBody(head);
-	        return responseData;
-	    }
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
+	
+	public PostDto getPost( Long postId ) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+
+		HashMap<String, Object> body = new HashMap<>();
+    	
+    	Post post = postRepository.getById( postId );
+    	
+    	PostDto dto = PostDto.from( post );
+    	
+//    	body.put( "post", dto );
+    	
+//		responseData = responseUtils.setResponseDataWithHashMapBody(head, body);
+        return dto;
+	}
+	
+	public ResponseData writeComment(CommentDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+			
+		try {
+			Post postRef = postRepository.getReferenceById(dto.postId());
+			User userRef = userRepository.getReferenceById(login_info.getId());
+			    
+			Comment comment = new Comment();
+
+			comment.setPost( postRef );
+			comment.setContent( dto.content() );
+			comment.setUser( userRef );
+			commentRepository.save( comment );
+
+			head.setResult_code( ResultCode.SUCCESS );
+			head.setResult_msg( ResultMsg.SUCCESS );
+		} catch( Exception e ) {
+
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+		}
+			
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
 }

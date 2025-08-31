@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.board.classes.ResponseData;
+import com.example.board.dto.CommentDto;
+import com.example.board.dto.PostDto;
 import com.example.board.dto.PostWriteDto;
 import com.example.board.repository.PostRepository;
 import com.example.board.service.PostService;
@@ -46,5 +48,16 @@ public class PostController {
     @PostMapping("/write")
     public @ResponseBody ResponseData writePost( @RequestBody PostWriteDto dto, HttpServletRequest request) {
     	return postService.writePost( dto, request );
+    }
+    
+    @GetMapping("/{postId}")
+    public PostDto getPostList( 
+    	    @PathVariable long postId) {
+    	return postService.getPost( postId );
+    } 
+
+    @PostMapping("/writeComment")
+    public @ResponseBody ResponseData writeComment( @RequestBody CommentDto dto, HttpServletRequest request) {
+    	return postService.writeComment( dto, request );
     }
 }
