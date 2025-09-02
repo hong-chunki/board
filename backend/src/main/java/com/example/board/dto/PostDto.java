@@ -1,6 +1,7 @@
 package com.example.board.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.board.domain.Post;
 
@@ -12,9 +13,11 @@ public record PostDto(
     LocalDateTime reg_date,
     Integer view,
     String category,
-    String user_name
+    String user_name,
+    List<CommentDto> comments,
+    Integer vote
 ) {
-    public static PostDto from(Post post) {
+    public static PostDto from(Post post, List<CommentDto> comments, Integer vote ) {
         return new PostDto(
         	post.getId(),
             post.getTitle(),
@@ -23,7 +26,9 @@ public record PostDto(
             post.getRegDate(),
             post.getView(),
             post.getCategory().getName(),
-            post.getUser().getNickname()
+            post.getUser().getNickname(),
+            comments,
+            vote
        );
     }
 }

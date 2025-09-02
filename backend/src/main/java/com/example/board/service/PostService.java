@@ -1,11 +1,13 @@
 package com.example.board.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.example.board.classes.LoginInfoData;
 import com.example.board.classes.ResponseData;
@@ -16,21 +18,27 @@ import com.example.board.domain.Board;
 import com.example.board.domain.Category;
 import com.example.board.domain.Comment;
 import com.example.board.domain.Post;
+import com.example.board.domain.PostVote;
 import com.example.board.domain.User;
 import com.example.board.dto.CommentDto;
 import com.example.board.dto.PostDto;
 import com.example.board.dto.PostSummaryDto;
 import com.example.board.dto.PostWriteDto;
+import com.example.board.dto.VoteCountDto;
+import com.example.board.dto.VoteDto;
 import com.example.board.repository.BoardRepository;
 import com.example.board.repository.CategoryRepository;
 import com.example.board.repository.CommentRepository;
+import com.example.board.repository.CommentVoteRepository;
 import com.example.board.repository.PostMapper;
 import com.example.board.repository.PostRepository;
+import com.example.board.repository.PostVoteRepository;
 import com.example.board.repository.UserRepository;
 import com.example.board.utils.ResponseDataUtility;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -48,6 +56,8 @@ public class PostService {
     private final CategoryRepository 	categoryRepository;
     private final UserRepository 		userRepository;
     private final CommentRepository 	commentRepository;
+    private final PostVoteRepository 	postVoteRepository;
+    private final CommentVoteRepository commentVoteRepository;
     
 	public ResponseData getPostList( Long boardId, int offset, int size, String sort ) {
 		ResponseData 	responseData 	= new ResponseData();
@@ -101,20 +111,51 @@ public class PostService {
 		return responseData;
 	}
 	
-	public PostDto getPost( Long postId ) {
+	@Transactional
+	public PostDto getPost( Long postId, HttpServletRequest request ) {
 		ResponseData 	responseData 	= new ResponseData();
 		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
 
 		HashMap<String, Object> body = new HashMap<>();
-    	
-    	Post post = postRepository.getById( postId );
-    	
-    	PostDto dto = PostDto.from( post );
-    	
+
+		try {
+	    	postRepository.incrementView( postId );
+	    	
+	    	Post post = postRepository.getById( postId );
+	    	
+	    	List<Comment> 		list 			= commentRepository.findByPostIdAndIsDeleteFalseOrderByRegDateAsc( postId );
+	    	List<CommentDto> 	comment_list 	= new ArrayList<>();
+	    	
+	    	Integer vote = postVoteRepository.getVote( postId );
+	    	
+	    	for( Comment c : list ) {
+	    		boolean isMine		= false;
+	    		boolean isWriter 	= false;
+	
+	    		if( c.getUser().getId() == login_info.getId() ) {
+	    			isMine = true;
+	    		}
+	    		if( c.getUser().getId() == post.getUser().getId() ) {
+	    			isWriter = true;
+	    		}
+	    		
+	    		VoteCountDto count = commentVoteRepository.getVote( c.getId() );
+	    		
+	    		CommentDto dto = CommentDto.from( c, isMine, isWriter, count.up(), count.down() );
+	    		comment_list.add( dto );
+	    	}
+	    	PostDto dto = PostDto.from( post, comment_list, vote );
+	    	
+	        return dto;
+		} catch( Exception e ) {
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
 //    	body.put( "post", dto );
-    	
+    	return null;
 //		responseData = responseUtils.setResponseDataWithHashMapBody(head, body);
-        return dto;
 	}
 	
 	public ResponseData writeComment(CommentDto dto, HttpServletRequest request) {
@@ -136,6 +177,50 @@ public class PostService {
 
 			head.setResult_code( ResultCode.SUCCESS );
 			head.setResult_msg( ResultMsg.SUCCESS );
+		} catch( Exception e ) {
+
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+		}
+			
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
+	
+	public ResponseData votePost(VoteDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+			
+		System.out.println("vote!!!!");
+		try {
+			PostVote post_vote = new PostVote();
+
+			System.out.println(dto);
+			boolean exist = postVoteRepository.existsByPostIdAndUserId(dto.id(), login_info.getId());
+
+			if( exist ) {
+				System.out.println("exist!!!!");
+				head.setResult_code( ResultCode.VOTE_ALREADY_EXISTS );
+				head.setResult_msg( ResultMsg.VOTE_ALREADY_EXISTS ); 
+			} else {
+				System.out.println("else!!!!");
+				Post postRef = postRepository.getReferenceById(dto.id());
+				System.out.println(postRef);
+				User userRef = userRepository.getReferenceById(login_info.getId());
+
+				System.out.println(userRef);
+				post_vote.setPost(postRef);
+				post_vote.setUser(userRef);
+				post_vote.setVoteType( dto.type() );
+
+				System.out.println(post_vote);
+				postVoteRepository.save( post_vote );
+
+				head.setResult_code( ResultCode.SUCCESS );
+				head.setResult_msg( ResultMsg.SUCCESS ); 
+			}
 		} catch( Exception e ) {
 
 			head.setResult_code( ResultCode.ERROR );

@@ -9,5 +9,7 @@ public class ResultMsg {
 	public static final String USER_ID_NOT_EXISTS 			= "아이디가 존재하지 않습니다.";
 	public static final String USER_PASSWORD_NOT_MATCHED 	= "비밀번호가 일치하지 않습니다.";
 	
+	public static final String VOTE_ALREADY_EXISTS 			= "이미 추천했습니다.";
+	
 	
 }

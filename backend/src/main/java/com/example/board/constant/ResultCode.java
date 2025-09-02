@@ -8,4 +8,6 @@ public class ResultCode {
 	public static final String USER_ID_ALREADY_EXISTS 		= "4201";
 	public static final String USER_ID_NOT_EXISTS 			= "4202";
 	public static final String USER_PASSWORD_NOT_MATCHED 	= "4203";
+
+	public static final String VOTE_ALREADY_EXISTS 			= "4301";
 }

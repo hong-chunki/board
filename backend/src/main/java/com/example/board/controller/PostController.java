@@ -14,6 +14,7 @@ import com.example.board.classes.ResponseData;
 import com.example.board.dto.CommentDto;
 import com.example.board.dto.PostDto;
 import com.example.board.dto.PostWriteDto;
+import com.example.board.dto.VoteDto;
 import com.example.board.repository.PostRepository;
 import com.example.board.service.PostService;
 
@@ -51,13 +52,18 @@ public class PostController {
     }
     
     @GetMapping("/{postId}")
-    public PostDto getPostList( 
-    	    @PathVariable long postId) {
-    	return postService.getPost( postId );
+    public PostDto getPost( 
+    	    @PathVariable long postId, HttpServletRequest request) {
+    	return postService.getPost( postId, request );
     } 
 
     @PostMapping("/writeComment")
     public @ResponseBody ResponseData writeComment( @RequestBody CommentDto dto, HttpServletRequest request) {
     	return postService.writeComment( dto, request );
+    }
+    
+    @PostMapping("/vote")
+    public @ResponseBody ResponseData votePost( @RequestBody VoteDto dto, HttpServletRequest request) {
+    	return postService.votePost( dto, request );
     }
 }
