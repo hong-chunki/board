@@ -66,4 +66,19 @@ public class PostController {
     public @ResponseBody ResponseData votePost( @RequestBody VoteDto dto, HttpServletRequest request) {
     	return postService.votePost( dto, request );
     }
+    
+    @PostMapping("/voteComment")
+    public @ResponseBody ResponseData voteComment( @RequestBody VoteDto dto, HttpServletRequest request) {
+    	return postService.voteComment( dto, request );
+    }
+    
+    @PostMapping("/deleteComment")
+    public @ResponseBody ResponseData deleteComment( @RequestBody CommentDto dto, HttpServletRequest request) {
+    	return postService.deleteComment( dto, request );
+    }
+    
+    @PostMapping("/updateComment")
+    public @ResponseBody ResponseData updateComment( @RequestBody CommentDto dto, HttpServletRequest request) {
+    	return postService.updateComment( dto, request );
+    }
 }

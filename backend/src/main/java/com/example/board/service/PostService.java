@@ -17,6 +17,7 @@ import com.example.board.constant.ResultMsg;
 import com.example.board.domain.Board;
 import com.example.board.domain.Category;
 import com.example.board.domain.Comment;
+import com.example.board.domain.CommentVote;
 import com.example.board.domain.Post;
 import com.example.board.domain.PostVote;
 import com.example.board.domain.User;
@@ -125,7 +126,7 @@ public class PostService {
 	    	
 	    	Post post = postRepository.getById( postId );
 	    	
-	    	List<Comment> 		list 			= commentRepository.findByPostIdAndIsDeleteFalseOrderByRegDateAsc( postId );
+	    	List<Comment> 		list 			= commentRepository.findByPostIdAndIsDeleteOrderByRegDateAsc( postId, "n" );
 	    	List<CommentDto> 	comment_list 	= new ArrayList<>();
 	    	
 	    	Integer vote = postVoteRepository.getVote( postId );
@@ -157,7 +158,8 @@ public class PostService {
     	return null;
 //		responseData = responseUtils.setResponseDataWithHashMapBody(head, body);
 	}
-	
+
+	@Transactional
 	public ResponseData writeComment(CommentDto dto, HttpServletRequest request) {
 		ResponseData 	responseData 	= new ResponseData();
 		Head			head			= new Head();
@@ -178,53 +180,151 @@ public class PostService {
 			head.setResult_code( ResultCode.SUCCESS );
 			head.setResult_msg( ResultMsg.SUCCESS );
 		} catch( Exception e ) {
-
 			head.setResult_code( ResultCode.ERROR );
 			head.setResult_msg( ResultMsg.ERROR );
+			
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
 			
 		responseData = responseUtils.setResponseDataWithEmptyBody(head);
 		return responseData;
 	}
-	
+
+	@Transactional
 	public ResponseData votePost(VoteDto dto, HttpServletRequest request) {
 		ResponseData 	responseData 	= new ResponseData();
 		Head			head			= new Head();
 		HttpSession 	session 		= request.getSession();
 		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
 			
-		System.out.println("vote!!!!");
 		try {
 			PostVote post_vote = new PostVote();
 
-			System.out.println(dto);
 			boolean exist = postVoteRepository.existsByPostIdAndUserId(dto.id(), login_info.getId());
 
 			if( exist ) {
-				System.out.println("exist!!!!");
 				head.setResult_code( ResultCode.VOTE_ALREADY_EXISTS );
 				head.setResult_msg( ResultMsg.VOTE_ALREADY_EXISTS ); 
 			} else {
-				System.out.println("else!!!!");
 				Post postRef = postRepository.getReferenceById(dto.id());
-				System.out.println(postRef);
 				User userRef = userRepository.getReferenceById(login_info.getId());
 
-				System.out.println(userRef);
 				post_vote.setPost(postRef);
 				post_vote.setUser(userRef);
 				post_vote.setVoteType( dto.type() );
 
-				System.out.println(post_vote);
 				postVoteRepository.save( post_vote );
 
 				head.setResult_code( ResultCode.SUCCESS );
 				head.setResult_msg( ResultMsg.SUCCESS ); 
 			}
 		} catch( Exception e ) {
-
 			head.setResult_code( ResultCode.ERROR );
 			head.setResult_msg( ResultMsg.ERROR );
+			
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+			
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
+
+	@Transactional
+	public ResponseData voteComment(VoteDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+			
+		try {
+			CommentVote comment_vote = new CommentVote();
+
+			boolean exist = commentVoteRepository.existsByCommentIdAndUserId(dto.id(), login_info.getId());
+
+			if( exist ) {
+				head.setResult_code( ResultCode.VOTE_ALREADY_EXISTS );
+				head.setResult_msg( ResultMsg.VOTE_ALREADY_EXISTS ); 
+			} else {
+				Comment commentRef 	= commentRepository.getReferenceById(dto.id());
+				User 	userRef 	= userRepository.getReferenceById(login_info.getId());
+
+				comment_vote.setComment(commentRef);
+				comment_vote.setUser(userRef);
+				comment_vote.setVoteType( dto.type() );
+
+				commentVoteRepository.save( comment_vote );
+
+				head.setResult_code( ResultCode.SUCCESS );
+				head.setResult_msg( ResultMsg.SUCCESS ); 
+			}
+		} catch( Exception e ) {
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+			
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+			
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
+	
+	public ResponseData deleteComment(CommentDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+			
+		try {
+			boolean exist = commentRepository.existsByIdAndUserId(dto.id(), login_info.getId());
+
+			if( exist ) {
+				commentRepository.deleteComment( dto.id() );
+
+				head.setResult_code( ResultCode.SUCCESS );
+				head.setResult_msg( ResultMsg.SUCCESS ); 
+			} else {
+				head.setResult_code( ResultCode.ERROR );
+				head.setResult_msg( ResultMsg.ERROR ); 
+			}
+		} catch( Exception e ) {
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+			
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+			
+		responseData = responseUtils.setResponseDataWithEmptyBody(head);
+		return responseData;
+	}
+	
+	public ResponseData updateComment(CommentDto dto, HttpServletRequest request) {
+		ResponseData 	responseData 	= new ResponseData();
+		Head			head			= new Head();
+		HttpSession 	session 		= request.getSession();
+		LoginInfoData 	login_info 		= (LoginInfoData) session.getAttribute( "loginInfo" );
+			
+		try {
+			boolean exist = commentRepository.existsByIdAndUserId(dto.id(), login_info.getId());
+
+			if( exist ) {
+				commentRepository.updateComment( dto.id(), dto.content() );
+
+				head.setResult_code( ResultCode.SUCCESS );
+				head.setResult_msg( ResultMsg.SUCCESS ); 
+			} else {
+				head.setResult_code( ResultCode.ERROR );
+				head.setResult_msg( ResultMsg.ERROR ); 
+			}
+		} catch( Exception e ) {
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+			
+			e.printStackTrace();
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
 			
 		responseData = responseUtils.setResponseDataWithEmptyBody(head);

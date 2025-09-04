@@ -115,3 +115,43 @@ export async function votePost(data: {
   if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
   return res.json();
 }
+
+export async function voteComment(data: {
+  id : number;
+  type : string;
+}) {
+  const res = await fetch(`${BASE_URL}/api/posts/voteComment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteComment(data: {
+  id : number;
+}) {
+  const res = await fetch(`${BASE_URL}/api/posts/deleteComment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}
+export async function updateComment(data: {
+  id : number;
+  content : string;
+}) {
+  const res = await fetch(`${BASE_URL}/api/posts/updateComment`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}
