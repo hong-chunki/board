@@ -1,7 +1,7 @@
 'use client';
 import { useState } from "react";
 import Link from 'next/link';
-import { loginAuth } from "../_lib/api";
+import { loginAuth, logoutAuth } from "../_lib/api";
 
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from '@/store/userSlice';
@@ -38,6 +38,7 @@ const UserInfo = () => {
       const data = {
         id: id.trim(), 
         password : password.trim(), 
+        auto : autoCheck
       }
       
       try {
@@ -57,7 +58,10 @@ const UserInfo = () => {
       }
     }
     
-    const doLogout = () => dispatch(logout());
+    const doLogout = () => {
+      logoutAuth();
+      dispatch(logout());
+    }
 
     return(
         <div className="flex justify-end items-center w-full bg-[#adadb1ff] shadow-[0_2px_4px_rgba(0,0,0,0.08)] h-[35px] pr-8">

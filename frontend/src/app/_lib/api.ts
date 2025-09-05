@@ -43,6 +43,7 @@ export async function registerUser(data: {
 export async function loginAuth(data: {
   id: string;
   password: string;
+  auto:boolean;
 }) {
   const res = await fetch(`${BASE_URL}/api/auth/login`, {
     method: 'POST',
@@ -51,6 +52,12 @@ export async function loginAuth(data: {
     credentials: 'include',
   });
   if (!res.ok) throw new Error(`POST 실패: ${res.status}`);
+  return res.json();
+}
+export async function logoutAuth() {
+  const res = await fetch(`${BASE_URL}/api/auth/logout`, { cache: 'no-store',
+    credentials: 'include', });
+  if (!res.ok) throw new Error(`GET 실패: ${res.status}`);
   return res.json();
 }
 

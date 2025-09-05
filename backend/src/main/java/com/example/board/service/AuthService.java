@@ -14,9 +14,11 @@ import com.example.board.constant.ResultMsg;
 import com.example.board.domain.User;
 import com.example.board.dto.UserRegister;
 import com.example.board.repository.UserRepository;
+import com.example.board.utils.LoginUtility;
 import com.example.board.utils.ResponseDataUtility;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +31,9 @@ public class AuthService {
 
 	@Autowired
 	private ResponseDataUtility responseUtils;
+	
+	@Autowired
+	private LoginUtility loginUtility;
 	
     public ResponseData register(UserRegister dto) {
 		ResponseData 	responseData 	= new ResponseData();
@@ -54,7 +59,7 @@ public class AuthService {
         return responseData;
     }
     
-    public ResponseData login(UserRegister dto, HttpServletRequest request) {
+    public ResponseData login(UserRegister dto, HttpServletRequest request, HttpServletResponse httpResponse) {
 		ResponseData 	responseData 	= new ResponseData();
 		Head			head			= new Head();
 		LoginInfoData 	login_info 		= new LoginInfoData();
@@ -80,6 +85,12 @@ public class AuthService {
         		login_info.setLoginInfoData( user );
         		
 				session.setAttribute( "loginInfo", login_info );
+
+				if( dto.auto() != null && dto.auto() ) {
+					loginUtility.setCookie(session, httpResponse, user.getId().intValue(), request);
+				} else {
+					loginUtility.removeCookie(request, httpResponse, user.getId().intValue() );
+				}
             } else {
         		head.setResult_code( ResultCode.USER_PASSWORD_NOT_MATCHED );
         		head.setResult_msg( ResultMsg.USER_PASSWORD_NOT_MATCHED );
@@ -88,5 +99,28 @@ public class AuthService {
 
 		responseData = responseUtils.setResponseDataWithHashMapBody(head, body);
         return responseData;
+    }
+    
+    public ResponseData logout(HttpServletRequest request, HttpServletResponse httpResponse) {
+		Head			head		= new Head();
+    	try {
+			HttpSession 	session 	= request.getSession();
+			LoginInfoData 	userData 	= (LoginInfoData)session.getAttribute( "loginInfo" );
+
+			if ( session != null ) {
+				session.invalidate();
+			}
+			
+			head.setResult_code( ResultCode.SUCCESS );
+			head.setResult_msg( ResultMsg.SUCCESS );
+			loginUtility.removeCookie(request, httpResponse, userData.getId().intValue() );
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			head.setResult_code( ResultCode.ERROR );
+			head.setResult_msg( ResultMsg.ERROR );
+		}
+		
+		return responseUtils.setResponseDataWithEmptyBody( head );
     }
 }
